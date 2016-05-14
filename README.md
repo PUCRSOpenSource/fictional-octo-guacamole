@@ -32,6 +32,7 @@ recebidos (código sequencial abaixo) e devolve ao seu pai, até que o nó folha
 restabeleça o vetor original ordenado (Figura 1).
 
 ![Image](https://github.com/execb5/fictional-octo-guacamole/raw/master/data/fig.gif)
+
 Figura 1: Funcionamento do modelo de divisão e conquista na ordenação de um único vetor
 
 Os itens para avaliação são:

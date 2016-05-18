@@ -12,7 +12,7 @@ LADR = ladrun
 LADFLAGS = -env mpicc
 CFLAGS = -Wall -g
 
-all: parallel
+all: sequential parallel
 
 sequential: $(SDIR)/sequential.c
 	$(CC) -o $@ $< $(CFLAGS)
@@ -42,9 +42,13 @@ endif
 tex: doc/report.tex
 	latexmk -pvc -f doc/report.tex
 
+run_seq: sequential
+	./$<
+
 .PHONY: clean
 
 clean:
+	rm -f sequential
 	rm -f parallel
 	rm -f report.aux
 	rm -f report.fdb_latexmk

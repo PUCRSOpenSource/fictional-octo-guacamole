@@ -91,7 +91,7 @@ int main()
 
     for (i=0 ; i<ARRAY_SIZE; i++)              /* init array with worst case for sorting */
         vetor[i] = ARRAY_SIZE-i;
-   
+
 
     #ifdef DEBUG
     printf("\nVetor: ");
@@ -119,7 +119,7 @@ Rotina de Intercalação
 
 /* recebe um ponteiro para um vetor que contem as mensagens recebidas dos filhos e            */
 /* intercala estes valores em um terceiro vetor auxiliar. Devolve um ponteiro para este vetor */
- 
+
 int *interleaving(int vetor[], int tam)
 {
 	int *vetor_auxiliar;

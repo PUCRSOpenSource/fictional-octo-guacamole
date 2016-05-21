@@ -8,7 +8,7 @@ void bs(int n, int * vetor)
 {
     int c=0, d, troca, trocou =1;
 
-    while (c < (n-1) & trocou )
+    while ((c < (n-1)) & trocou )
         {
         trocou = 0;
         for (d = 0 ; d < n - c - 1; d++)

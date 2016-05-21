@@ -32,7 +32,7 @@
 *.dSYM/
 
 
-
+sequential
 parallel
 
 ## Core latex/pdflatex auxiliary files:

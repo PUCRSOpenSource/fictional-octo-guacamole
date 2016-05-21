@@ -13,6 +13,7 @@ int main(int argc, char** argv)
 	MPI_Comm_size(MPI_COMM_WORLD, &proc_n);
 
 	//Do what we need to do
+	printf("My rank is %d\n", my_rank);
 
 	MPI_Finalize();
 

@@ -4,7 +4,7 @@
 
 #define ARRAY_SIZE 40                          /* trabalho final com o valores 10.000, 100.000, 1.000.000 */
 
-void bs(int n, int * vetor)
+void bs(int n, int* vetor)
 {
 	int c = 0;
 	int d;

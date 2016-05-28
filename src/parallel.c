@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define DEBUG 1                                /* comentar esta linha quando for medir tempo */
 #define ARRAY_SIZE 40                          /* trabalho final com o valores 10.000, 100.000, 1.000.000 */
 
 void bs(int n, int * vetor)
@@ -33,9 +32,11 @@ void bs(int n, int * vetor)
 int* interleaving(int vetor[], int tam)
 {
 	int* vetor_auxiliar;
-	int i1, i2, i_aux;
+	int i1;
+	int i2;
+	int i_aux;
 
-	vetor_auxiliar = malloc(sizeof(int) * tam);
+	vetor_auxiliar = malloc(tam * sizeof(int));
 
 	i1 = 0;
 	i2 = tam / 2;
@@ -56,64 +57,21 @@ int* vetor_auxiliar;         // ponteiro para o vetor resultantes que sera aloca
 vetor_aux = interleaving(vetor, tam);
 */
 
-int main(void)
+int main(int argc, char** argv)
 {
-	int vetor[ARRAY_SIZE];
-	int i;
+	int my_rank;
+	int proc_n;
 
-	for (i=0 ; i<ARRAY_SIZE; i++)          /* init array with worst case for sorting */
-		vetor[i] = ARRAY_SIZE-i;
+	MPI_Init(&argc, &argv);
 
-#ifdef DEBUG
-	printf("\nVetor: ");
-	for (i=0 ; i<ARRAY_SIZE; i++)          /* print unsorted array */
-		printf("[%03d] ", vetor[i]);
-#endif
+	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &proc_n);
 
-	bs(ARRAY_SIZE, vetor);                 /* sort array */
+	//Do what we need to do
+	printf("My rank is %d\n", my_rank);
 
-#ifdef DEBUG
-	printf("\nVetor: ");
-	for (i=0 ; i<ARRAY_SIZE; i++)          /* print sorted array */
-		printf("[%03d] ", vetor[i]);
-#endif
+	MPI_Finalize();
 
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*int main(int argc, char** argv)*/
-/*{*/
-	/*int my_rank;*/
-	/*int proc_n;*/
-
-	/*MPI_Init(&argc, &argv);*/
-
-	/*MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);*/
-	/*MPI_Comm_size(MPI_COMM_WORLD, &proc_n);*/
-
-	/*//Do what we need to do*/
-	/*printf("My rank is %d\n", my_rank);*/
-
-	/*MPI_Finalize();*/
-
-	/*return 0;*/
-/*}*/
 

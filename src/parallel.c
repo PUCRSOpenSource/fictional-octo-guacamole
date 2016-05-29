@@ -11,7 +11,7 @@ void bs(int n, int* vetor)
 	int troca;
 	int trocou = 1;
 
-	while (c < (n-1) & trocou )
+	while ((c < (n-1)) & trocou )
 	{
 		trocou = 0;
 		for (d = 0 ; d < n - c - 1; d++)
@@ -51,11 +51,48 @@ int* interleaving(int vetor[], int tam)
 	return vetor_auxiliar;
 }
 
-/*
-int* vetor_auxiliar;         // ponteiro para o vetor resultantes que sera alocado dentro da rotina
+int print_vec(int* vec)
+{
+	printf("[ ");
+	int i;
+	for (i = 0; i < ARRAY_SIZE / 2; i++)
+		printf("%d ", vec[i] );
+	printf("]\n");
+	return 0;
+}
 
-vetor_aux = interleaving(vetor, tam);
-*/
+int a(void)
+{
+	int proc_n;
+
+	int vec[ARRAY_SIZE] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39 };
+
+	MPI_Status status;
+	MPI_Comm_size(MPI_COMM_WORLD, &proc_n);
+
+	MPI_Send(vec + ARRAY_SIZE / 2, ARRAY_SIZE / 2, MPI_INT, 1, 1, MPI_COMM_WORLD);
+
+	print_vec(vec);
+
+	return 0;
+}
+
+int b(void)
+{
+	int* vec = malloc(ARRAY_SIZE / 2 * sizeof(int));
+
+	if (!vec) return EXIT_FAILURE;
+
+	MPI_Status status;
+
+	MPI_Recv(vec, ARRAY_SIZE / 2, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+
+	print_vec(vec);
+
+	free(vec);
+
+	return 0;
+}
 
 int main(int argc, char** argv)
 {
@@ -67,8 +104,10 @@ int main(int argc, char** argv)
 	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &proc_n);
 
-	//Do what we need to do
-	printf("My rank is %d\n", my_rank);
+	if (my_rank == 0)
+		a();
+	else
+		b();
 
 	MPI_Finalize();
 

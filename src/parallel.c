@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define ARRAY_SIZE 40                          /* trabalho final com o valores 10.000, 100.000, 1.000.000 */
+#define ARRAY_SIZE 40
+
+int delta;
 
 void bs(int n, int* vetor)
 {
@@ -25,9 +27,6 @@ void bs(int n, int* vetor)
 		c++;
 	}
 }
-
-/* recebe um ponteiro para um vetor que contem as mensagens recebidas dos filhos e            */
-/* intercala estes valores em um terceiro vetor auxiliar. Devolve um ponteiro para este vetor */
 
 int* interleaving(int vetor[], int tam)
 {
@@ -79,31 +78,63 @@ int right_child(int my_rank)
 
 int a(void)
 {
+	int i;
+	int j;
+	int vec[ARRAY_SIZE];
+
+	// Populate the vector
+	for (i = 0, j = ARRAY_SIZE - 1; i < ARRAY_SIZE; i++, j--)
+		vec[i] = j;
+
 	int proc_n;
+	int my_rank;
 
-	int vec[ARRAY_SIZE] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39 };
+	delta = ARRAY_SIZE / (proc_n - 1);
 
-	MPI_Status status;
+	// MPI stuff
+	/*MPI_Status status;*/
+	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &proc_n);
 
-	MPI_Send(vec + ARRAY_SIZE / 2, ARRAY_SIZE / 2, MPI_INT, 1, 1, MPI_COMM_WORLD);
+	// Set delta
+	delta = ARRAY_SIZE / (proc_n - 1);
 
-	print_vec(vec, ARRAY_SIZE / 2);
+	if (ARRAY_SIZE <= delta)
+	{
+		bs(ARRAY_SIZE, vec);
+	}
+	else
+	{
+		int size = ARRAY_SIZE / 2;
+
+		MPI_Send(  vec, ARRAY_SIZE / 2, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
+		MPI_Send(&size,              1, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
+
+		MPI_Send(               &size,              1, MPI_INT, right_child(my_rank), 1, MPI_COMM_WORLD);
+		MPI_Send(vec + ARRAY_SIZE / 2, ARRAY_SIZE / 2, MPI_INT, right_child(my_rank), 1, MPI_COMM_WORLD);
+	}
 
 	return 0;
 }
 
 int b(void)
 {
-	int* vec = malloc(ARRAY_SIZE / 2 * sizeof(int));
-
-	if (!vec) return EXIT_FAILURE;
-
+	int my_rank;
 	MPI_Status status;
+	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
-	MPI_Recv(vec, ARRAY_SIZE / 2, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+	int size;
+	MPI_Recv(&size, 1, MPI_INT, parent(my_rank), MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
-	print_vec(vec, ARRAY_SIZE / 2);
+	int* vec = malloc(size * sizeof(int));
+
+	if (!vec)
+		return EXIT_FAILURE;
+
+	MPI_Recv(vec, size, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+
+	printf("My rank is: %d and my vec is:\n", my_rank);
+	print_vec(vec, size);
 
 	free(vec);
 

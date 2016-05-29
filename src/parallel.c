@@ -107,8 +107,8 @@ int a(void)
 	{
 		int size = ARRAY_SIZE / 2;
 
-		MPI_Send(  vec, ARRAY_SIZE / 2, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
 		MPI_Send(&size,              1, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
+		MPI_Send(  vec, ARRAY_SIZE / 2, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
 
 		MPI_Send(               &size,              1, MPI_INT, right_child(my_rank), 1, MPI_COMM_WORLD);
 		MPI_Send(vec + ARRAY_SIZE / 2, ARRAY_SIZE / 2, MPI_INT, right_child(my_rank), 1, MPI_COMM_WORLD);

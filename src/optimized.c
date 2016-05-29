@@ -4,6 +4,7 @@
 
 #define DEBUG 1
 #define ARRAY_SIZE 40
+#define DELTA(proc_n) (ARRAY_SIZE / ((proc_n + 1) / 2))
 
 void bs(int n, int* vetor)
 {
@@ -93,7 +94,7 @@ int root(void)
 	MPI_Comm_size(MPI_COMM_WORLD, &proc_n);
 
 	// Set delta
-	int delta = ARRAY_SIZE / ((proc_n + 1) / 2);
+	int delta = DELTA(proc_n);
 
 #ifdef DEBUG
 	printf("Vector size: %d\n", ARRAY_SIZE);
@@ -158,7 +159,7 @@ int child(void)
 #endif
 
 	// Set delta
-	int delta = ARRAY_SIZE / ((proc_n + 1) / 2);
+	int delta = DELTA(proc_n);
 
 	if (size <= delta)
 	{

@@ -34,6 +34,7 @@
 
 sequential
 parallel
+optimized
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

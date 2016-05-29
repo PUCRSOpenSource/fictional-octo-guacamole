@@ -51,14 +51,30 @@ int* interleaving(int vetor[], int tam)
 	return vetor_auxiliar;
 }
 
-int print_vec(int* vec)
+int print_vec(int* vec, int size)
 {
-	printf("[ ");
 	int i;
-	for (i = 0; i < ARRAY_SIZE / 2; i++)
+
+	printf("[ ");
+	for (i = 0; i < size; i++)
 		printf("%d ", vec[i] );
 	printf("]\n");
 	return 0;
+}
+
+int parent(int my_rank)
+{
+	return (my_rank - 1) / 2;
+}
+
+int left_child(int my_rank)
+{
+	return 2 * my_rank + 1;
+}
+
+int right_child(int my_rank)
+{
+	return 2 * my_rank + 2;
 }
 
 int a(void)
@@ -72,7 +88,7 @@ int a(void)
 
 	MPI_Send(vec + ARRAY_SIZE / 2, ARRAY_SIZE / 2, MPI_INT, 1, 1, MPI_COMM_WORLD);
 
-	print_vec(vec);
+	print_vec(vec, ARRAY_SIZE / 2);
 
 	return 0;
 }
@@ -87,7 +103,7 @@ int b(void)
 
 	MPI_Recv(vec, ARRAY_SIZE / 2, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
-	print_vec(vec);
+	print_vec(vec, ARRAY_SIZE / 2);
 
 	free(vec);
 

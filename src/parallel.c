@@ -122,11 +122,13 @@ int root(void)
 		MPI_Recv(       vec, size, MPI_INT,  left_child(my_rank), MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Recv(vec + size, size, MPI_INT, right_child(my_rank), MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
-		interleaving(vec, ARRAY_SIZE);
+		int* ans = interleaving(vec, ARRAY_SIZE);
 
 #ifdef DEBUG
-		print_vec(vec, ARRAY_SIZE);
+		print_vec(ans, ARRAY_SIZE);
 #endif
+
+		free(ans);
 	}
 
 	return 0;
@@ -178,9 +180,11 @@ int child(void)
 		MPI_Recv(             vec, child_size, MPI_INT,  left_child(my_rank), MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Recv(vec + child_size, child_size, MPI_INT, right_child(my_rank), MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
-		interleaving(vec, size);
+		int* ans = interleaving(vec, size);
 
-		MPI_Send(vec, size, MPI_INT, parent(my_rank), 1, MPI_COMM_WORLD);
+		MPI_Send(ans, size, MPI_INT, parent(my_rank), 1, MPI_COMM_WORLD);
+
+		free(ans);
 	}
 
 	free(vec);

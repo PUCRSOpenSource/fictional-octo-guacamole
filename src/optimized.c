@@ -4,7 +4,7 @@
 
 #define DEBUG 1
 #define ARRAY_SIZE 40
-#define DELTA(proc_n) (ARRAY_SIZE / ((proc_n + 1) / 2))
+#define DELTA(proc_n) (ARRAY_SIZE / proc_n)
 
 void bs(int n, int* vetor)
 {
@@ -33,18 +33,23 @@ int* interleaving(int vetor[], int tam)
 	int* vetor_auxiliar;
 	int i1;
 	int i2;
+	int i3;
 	int i_aux;
 
 	vetor_auxiliar = malloc(tam * sizeof(int));
 
 	i1 = 0;
-	i2 = tam / 2;
+	i2 = tam / 3;
+	i3 = tam / 3 * 2;
 
 	for (i_aux = 0; i_aux < tam; i_aux++) {
-		if (((vetor[i1] <= vetor[i2]) && (i1 < (tam / 2))) || (i2 == tam))
+		if (((vetor[i1] <= vetor[i2]) && (vetor[i1] <= vetor[i3]) && (i1 < (tam / 3))) || (i3 == tam))
 			vetor_auxiliar[i_aux] = vetor[i1++];
 		else
-			vetor_auxiliar[i_aux] = vetor[i2++];
+			if (((vetor[i2] <= vetor[i3]) && (vetor[i2] <= vetor[i1]) && (i2 < (tam / 3 * 2))) || (i3 == tam))
+				vetor_auxiliar[i_aux] = vetor[i2++];
+			else
+				vetor_auxiliar[i_aux] = vetor[i3++];
 	}
 
 	return vetor_auxiliar;
@@ -110,22 +115,30 @@ int root(void)
 	}
 	else
 	{
-		int size = ARRAY_SIZE / 2;
+		int child_size = ARRAY_SIZE / 3;
 
 		// Sending message to the children
-		MPI_Send(&size,    1, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
-		MPI_Send(  vec, size, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
+		MPI_Send(&child_size,    1, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
+		MPI_Send(  vec, child_size, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
 
-		MPI_Send(     &size,    1, MPI_INT, right_child(my_rank), 1, MPI_COMM_WORLD);
-		MPI_Send(vec + size, size, MPI_INT, right_child(my_rank), 1, MPI_COMM_WORLD);
+		MPI_Send(     &child_size,          1, MPI_INT, right_child(my_rank), 1, MPI_COMM_WORLD);
+		MPI_Send(vec + child_size, child_size, MPI_INT, right_child(my_rank), 1, MPI_COMM_WORLD);
+
+		bs(ARRAY_SIZE - 2 * child_size, vec + 2 * child_size);
 
 		// Receiving message from the children
-		MPI_Recv(       vec, size, MPI_INT,  left_child(my_rank), MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-		MPI_Recv(vec + size, size, MPI_INT, right_child(my_rank), MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(             vec, child_size, MPI_INT,  left_child(my_rank), MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(vec + child_size, child_size, MPI_INT, right_child(my_rank), MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+
+#ifdef DEBUG
+		printf("Rank %d: Before interleaving\n", my_rank);
+		print_vec(vec, ARRAY_SIZE);
+#endif
 
 		int* ans = interleaving(vec, ARRAY_SIZE);
 
 #ifdef DEBUG
+		printf("Rank %d: After interleaving\n", my_rank);
 		print_vec(ans, ARRAY_SIZE);
 #endif
 
@@ -168,7 +181,7 @@ int child(void)
 	}
 	else
 	{
-		int child_size = size / 2;
+		int child_size = size / 3;
 
 		// Sending message to the children
 		MPI_Send(&child_size,          1, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
@@ -177,11 +190,23 @@ int child(void)
 		MPI_Send(     &child_size,          1, MPI_INT, right_child(my_rank), 1, MPI_COMM_WORLD);
 		MPI_Send(vec + child_size, child_size, MPI_INT, right_child(my_rank), 1, MPI_COMM_WORLD);
 
+		bs(size - 2 * child_size, vec + 2 * child_size);
+
 		// Receiving message from the children
 		MPI_Recv(             vec, child_size, MPI_INT,  left_child(my_rank), MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Recv(vec + child_size, child_size, MPI_INT, right_child(my_rank), MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
+#ifdef DEBUG
+		printf("Rank %d: Before interleaving\n", my_rank);
+		print_vec(vec, size);
+#endif
+
 		int* ans = interleaving(vec, size);
+
+#ifdef DEBUG
+		printf("Rank %d: After interleaving\n", my_rank);
+		print_vec(vec, size);
+#endif
 
 		MPI_Send(ans, size, MPI_INT, parent(my_rank), 1, MPI_COMM_WORLD);
 

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define DEBUG 1
-#define ARRAY_SIZE 100000
+/*#define DEBUG 1*/
+#define ARRAY_SIZE 1000000
 #define DELTA(proc_n) (ARRAY_SIZE / proc_n)
 #define VALID(i, lim_i) (i < lim_i)
 #define HOI(array, i, lim_i, next_i) (array[i] > array[next_i] || !VALID(i, lim_i))
@@ -24,13 +24,13 @@ void bs(int n, int* vetor)
 				troca      = vetor[d];
 				vetor[d]   = vetor[d+1];
 				vetor[d+1] = troca;
-				trocou = 1;
+				trocou     = 1;
 			}
 		c++;
 	}
 }
 
-int* interleaving(int vetor[], int tam)
+int* interleaving(int vetor[], int tam, int delta)
 {
 	int* vetor_auxiliar;
 	int i1;
@@ -42,11 +42,13 @@ int* interleaving(int vetor[], int tam)
 
 	vetor_auxiliar = malloc(tam * sizeof(int));
 
+	int child_size = (tam - delta) / 2;
+
 	i1     = 0;
-	lim_i1 = tam / 3;
-	i2     = tam / 3;
-	lim_i2 = tam / 3 * 2;
-	i3     = tam / 3 * 2;
+	lim_i1 = child_size;
+	i2     = child_size;
+	lim_i2 = child_size * 2;
+	i3     = child_size * 2;
 
 	for (i_aux = 0; i_aux < tam; i_aux++) {
 		if ((VALID(i1, lim_i1)) && HOI(vetor, i2, lim_i2, i1) &&  HOI(vetor, i3, tam, i1))
@@ -97,6 +99,9 @@ int right_child(int my_rank)
 
 int root(void)
 {
+	double t1,t2;
+	t1 = MPI_Wtime();
+
 	int i;
 	int j;
 	int vec[ARRAY_SIZE];
@@ -121,7 +126,7 @@ int root(void)
 	printf("My rank is: %d and my vec size is: %d\n", my_rank, ARRAY_SIZE);
 #endif
 
-	if (ARRAY_SIZE <= delta)
+	if (ARRAY_SIZE < 2 * delta)
 	{
 		bs(ARRAY_SIZE, vec);
 #ifdef DEBUG
@@ -130,7 +135,7 @@ int root(void)
 	}
 	else
 	{
-		int child_size = ARRAY_SIZE / 3;
+		int child_size = (ARRAY_SIZE - delta) / 2;
 
 		// Sending message to the children
 		MPI_Send(&child_size,    1, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
@@ -150,7 +155,7 @@ int root(void)
 		print_vec(vec, ARRAY_SIZE);
 #endif
 
-		int* ans = interleaving(vec, ARRAY_SIZE);
+		int* ans = interleaving(vec, ARRAY_SIZE, delta);
 
 #ifdef DEBUG
 		printf("Rank %d: After interleaving\n", my_rank);
@@ -159,6 +164,9 @@ int root(void)
 
 		free(ans);
 	}
+
+	t2 = MPI_Wtime();
+	fprintf(stderr, "Time: %fs\n\n", t2-t1);
 
 	return 0;
 }
@@ -189,14 +197,14 @@ int child(void)
 	// Set delta
 	int delta = DELTA(proc_n);
 
-	if (size <= delta)
+	if (size <= 2 * delta)
 	{
 		bs(size, vec);
 		MPI_Send(vec, size, MPI_INT, parent(my_rank), 1, MPI_COMM_WORLD);
 	}
 	else
 	{
-		int child_size = size / 3;
+		int child_size = (size - delta) / 2;
 
 		// Sending message to the children
 		MPI_Send(&child_size,          1, MPI_INT, left_child(my_rank), 1, MPI_COMM_WORLD);
@@ -216,7 +224,7 @@ int child(void)
 		print_vec(vec, size);
 #endif
 
-		int* ans = interleaving(vec, size);
+		int* ans = interleaving(vec, size, delta);
 
 #ifdef DEBUG
 		printf("Rank %d: After interleaving\n", my_rank);

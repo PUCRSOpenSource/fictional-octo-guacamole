@@ -3,8 +3,10 @@
 #include <mpi.h>
 
 #define DEBUG 1
-#define ARRAY_SIZE 40
+#define ARRAY_SIZE 100000
 #define DELTA(proc_n) (ARRAY_SIZE / proc_n)
+#define VALID(i, lim_i) (i < lim_i)
+#define HOI(array, i, lim_i, next_i) (array[i] > array[next_i] || !VALID(i, lim_i))
 
 void bs(int n, int* vetor)
 {
@@ -32,24 +34,36 @@ int* interleaving(int vetor[], int tam)
 {
 	int* vetor_auxiliar;
 	int i1;
+	int lim_i1;
 	int i2;
+	int lim_i2;
 	int i3;
 	int i_aux;
 
 	vetor_auxiliar = malloc(tam * sizeof(int));
 
-	i1 = 0;
-	i2 = tam / 3;
-	i3 = tam / 3 * 2;
+	i1     = 0;
+	lim_i1 = tam / 3;
+	i2     = tam / 3;
+	lim_i2 = tam / 3 * 2;
+	i3     = tam / 3 * 2;
 
 	for (i_aux = 0; i_aux < tam; i_aux++) {
-		if (((vetor[i1] <= vetor[i2]) && (vetor[i1] <= vetor[i3]) && (i1 < (tam / 3))) || (i3 == tam))
+		if ((VALID(i1, lim_i1)) && HOI(vetor, i2, lim_i2, i1) &&  HOI(vetor, i3, tam, i1))
+		{
 			vetor_auxiliar[i_aux] = vetor[i1++];
+		}
 		else
-			if (((vetor[i2] <= vetor[i3]) && (vetor[i2] <= vetor[i1]) && (i2 < (tam / 3 * 2))) || (i3 == tam))
+		{
+			if (VALID(i2, lim_i2) &&  HOI(vetor, i3, tam, i2))
+			{
 				vetor_auxiliar[i_aux] = vetor[i2++];
+			}
 			else
+			{
 				vetor_auxiliar[i_aux] = vetor[i3++];
+			}
+		}
 	}
 
 	return vetor_auxiliar;

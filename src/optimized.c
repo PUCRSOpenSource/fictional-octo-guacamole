@@ -104,6 +104,7 @@ int root(void)
 #ifdef DEBUG
 	printf("Vector size: %d\n", ARRAY_SIZE);
 	printf("Delta: %d\n", delta);
+	printf("My rank is: %d and my vec size is: %d\n", my_rank, ARRAY_SIZE);
 #endif
 
 	if (ARRAY_SIZE <= delta)

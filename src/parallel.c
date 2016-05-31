@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define DEBUG 1
+/*#define DEBUG 1*/
 #define ARRAY_SIZE 100000
 
 void

@@ -1,4 +1,4 @@
-\documentclass[11pt]{IEEEtran}
+\documentclass[9pt]{IEEEtran}
 \usepackage[brazilian]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -49,11 +49,11 @@ A analise dos dados foi feita baseada no pior caso ,do problema apresentado, que
 é o vetor de um milhão de posições. Para o caso do vetor de cem mil posições
 também foram coletados os tempos e podem ser observados na tabela.
 
-Em primeirá analise é possível observar que no caso sem otimização o tempo de
+Em primeira analise é possível observar que no caso sem otimização o tempo de
 resposta diminui e o speed-up aumentou, ultrapassando até mesmo o speed-up ideal
 com o aumento do número de processos, isso ocorre devido não só ao fato de ter
 mais processos em execução mas também pelo algoritmo de ordenação possuir uma
-notação O(n²) que permite a cada divisão no vetor uma melhora quadratica no
+notação $O(n^2)$ que permite a cada divisão no vetor uma melhora quadrática no
 tempo para a ordenação da nova parte. É possível observar também que a
 eficiência também aumenta com o aumento do número de processos em execução,
 entretanto de 15 para 31 threads a eficiência diminui um pouco já que devido a
@@ -80,7 +80,7 @@ utiliza o tempo que os outros processos  demoram para realizar a sua ordenação
 local, mesmo ainda existindo uma perda de tempo pelas trocas de mensagens e para
 o método de intercalação.
 
-O fato de se estar utilizando a biblioteca MPI\@ e dois nós da maquina atlantica
+O fato de se estar utilizando a biblioteca MPI e dois nós da maquina atlantica
 permitiu um balanceamento da carga entre os núcleos e threads destes nós e há
 uma possível perda nos tempos de resposta para a comunicação que não teve
 relevância para a análise realizada. A utilização de mais de 16
@@ -114,29 +114,47 @@ observar com o bubble sort.
 
 	\begin{table}[H]
 		\centering
-		%\scalebox{0.8}{
-			\begin{tabular}{c|r|r|r|r}
-				Processos & Normal & Otimizado & Normal O3 & Otimizado O3 \\
+		\scalebox{0.9}{
+			\begin{tabular}{|c|r|r|r|r|}
 				\hline
-				3  & 1118,725370s & 504,497851s & 260,702105s & 116,810162s \\
+				\multicolumn{5}{|c|}{Versão Normal} \\
 				\hline
-				7  &  283,095140s &  92,283123s &  65,604866s & 21,520253s \\
+				Núcleos & Tempo de Execução(s) & Speed-Up & Speed-Up Ideal & Eficiência \\
 				\hline
-				15 &   73,926856s &  21,100409s &  16,904703s & 4,794249s \\
+				1  & 4200         &   1,0 &  1 & 1.0 \\
 				\hline
-				31 &   36,979798s &   9,868190s &   6,390105s & 1,807969s \\
+				3  & 1118,725370s &   3.8 &  3 & 1,3 \\
+				\hline
+				7  &  283,095140s &    15 &  7 & 2,1 \\
+				\hline
+				15 &   73,926856s &  56,8 & 15 & 3,8 \\
+				\hline
+				31 &   36,979798s & 113,6 & 31 & 3,7 \\
+				\hline
+				\multicolumn{5}{|c|}{Versão Otimizada} \\
+				\hline
+				1  & 4200         &   1,0 &  1 & 1,0 \\
+				\hline
+				3  &  504,497851s &   8,3 &  3 & 2,8 \\
+				\hline
+				7  &   92,283123s &    46 &  7 & 6,5 \\
+				\hline
+				15 &   21,100409s & 199,0 & 15 & 13,3 \\
+				\hline
+				31 &    9,868190s & 425,6 & 31 & 13,7 \\
+				\hline
 			\end{tabular}
-		%}
+		}
 		\caption{Resultados obtidos para 1000000}
 		\label{result_table}
 	\end{table}
 
-	%\begin{figure}[H]
-		%\centering
-		%\includegraphics[width=88mm]{doc/graph.png}
-		%\caption{Gráfico gerado a partir da tabela}
-		%\label{fig_graph}
-	%\end{figure}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=88mm]{doc/graph.PNG}
+		\caption{Gráfico gerado a partir da tabela}
+		\label{fig_graph}
+	\end{figure}
 
 \section{Dificuldades Encontradas}
 

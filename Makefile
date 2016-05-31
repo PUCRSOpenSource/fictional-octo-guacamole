@@ -10,7 +10,7 @@ LADC = ladcomp
 LADR = ladrun
 
 LADFLAGS = -env mpicc
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -O3
 
 all: sequential parallel optimized
 

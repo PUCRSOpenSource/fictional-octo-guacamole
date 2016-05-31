@@ -50,25 +50,6 @@
 	que é o vetor de um milhão de posições. Para o caso do vetor de cem mil
 	posições também foram coletados os tempos e podem ser observados na tabela.
 
-	%\begin{table}[H]
-		%\centering
-		%%\scalebox{0.8}{
-			%\begin{tabular}{c|r|r}
-				%Núcleos & Normal & Otimizado \\
-				%\hline
-				%3  &   11,197 & 5,030 \\
-				%\hline
-				%7  &    2,864 & 0,924 \\
-				%\hline
-				%15 &    0,911 & 0,360 \\
-				%\hline
-				%31 &    0,379 & 0,115 \\
-			%\end{tabular}
-		%%}
-		%\caption{Resultados obtidos para 100000}
-		%\label{result_table}
-	%\end{table}
-
 	Em primeira analise é possível observar que no caso sem otimização o tempo
 	de resposta diminui e o speed-up aumentou, ultrapassando até mesmo o
 	speed-up ideal com o aumento do número de processos, isso ocorre devido não
@@ -92,7 +73,7 @@
 			\begin{tabular}{c|r|r|r|r|r}
 				\multicolumn{6}{c}{Versão Normal} \\
 				\hline
-				Núcleos & Tempo(s) & Speed-Up & Speed-Up Ideal & Eficiência & 100k elementos \\
+				Núcleos & Tempo(s) & Speed-Up & Speed-Up Ideal & Eficiência & 100k elementos(s) \\
 				\hline
 				1  & 4200     &   1,0 &  1 & 1.0 & - \\
 				\hline
@@ -117,7 +98,7 @@
 				31 &    9,868 & 425,6 & 31 & 13,7 & 0,115 \\
 			\end{tabular}
 		}
-		\caption{Resultados obtidos para 1000000}
+		\caption{Resultados obtidos para 1000000 e tempo para 100000}
 		\label{result_table}
 	\end{table}
 
@@ -155,12 +136,6 @@
 	rápido permitiria um tempo de execução menor mas não seria observado tamanha
 	diferença entre seus valores para diferentes números de processos como foi
 	possível observar com o bubble sort.
-
-
-\section{Dificuldades Encontradas}
-
-	Não foram encontradas dificuldades na implementação desse trabalho, nem na
-	utilização da biblioteca MPI\@.
 
 \end{document}
 

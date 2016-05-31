@@ -61,8 +61,8 @@ else
 endif
 endif
 
-tex: doc/report.tex
-	latexmk -pvc -f doc/report.tex
+tex: doc/base_report.tex
+	latexmk -pvc -f doc/base_report.tex
 
 run_seq: sequential
 	./$<
@@ -73,7 +73,8 @@ clean:
 	rm -f sequential
 	rm -f parallel
 	rm -f optimized
-	rm -f report.aux
-	rm -f report.fdb_latexmk
-	rm -f report.fls
-	rm -f report.log
+	rm -f base_report.aux
+	rm -f base_report.fdb_latexmk
+	rm -f base_report.fls
+	rm -f base_report.log
+	rm -f base_report.pdf

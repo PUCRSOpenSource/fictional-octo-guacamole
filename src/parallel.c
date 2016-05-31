@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define DEBUG 1
-#define ARRAY_SIZE 40
+/*#define DEBUG 1*/
+#define ARRAY_SIZE 100000
 
 void bs(int n, int* vetor)
 {
@@ -77,6 +77,9 @@ int right_child(int my_rank)
 
 int root(void)
 {
+	double t1,t2;
+	t1 = MPI_Wtime();
+
 	int i;
 	int j;
 	int vec[ARRAY_SIZE];
@@ -130,6 +133,9 @@ int root(void)
 
 		free(ans);
 	}
+
+	t2 = MPI_Wtime();
+	fprintf(stderr, "Time: %fs\n\n", t2-t1);
 
 	return 0;
 }
